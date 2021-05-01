@@ -4,7 +4,6 @@ export default class ItemList extends React.Component {
     constructor(props) {
         super(props);
     }
-
     render() {
         return (
             <ul>
@@ -14,6 +13,7 @@ export default class ItemList extends React.Component {
                             <div className="blockTable">{el.date}</div>
                             <div className="blockTable">{el.typeTrain}</div>
                             <div className="blockTable">{el.distance}</div>
+                            <input type="button" onClick={() => this.props.onDelete(index)} value="&times;"/>
                         </li>
                     )
                 }
