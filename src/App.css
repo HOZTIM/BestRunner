@@ -3,3 +3,23 @@
     border: 1px black solid;
     width: 100px;
 }
+.filter{
+    margin-left: 100px;
+}
+.filterBlock, .filterBlockItem{
+    display: inline-block;
+    margin: 0 15px;
+}
+.container{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.containerFilter{
+    width: 100%;
+}
+.footer{
+    position: absolute;
+    margin-top: 500px;
+    margin-left: 700px;
+}
