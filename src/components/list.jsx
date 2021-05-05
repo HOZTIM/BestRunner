@@ -7,22 +7,24 @@ export default class List extends React.Component {
         super(props);
         this.state = {
             elements: [],
+            elementsFilter: [],
             date: "",
             dateFilter: "",
             distance: 0,
             distanceFilterMin: 0,
             distanceFilterMax: 9999,
             typeTrainFilter: "Не выбрано",
+            dateFilterMin: "",
+            dateFilterMax: ""
         }
         this.del = this.del.bind(this);
     }
 
-    add(event) {
-        event.preventDefault();
+    add() {
         let sel = document.getElementById("listTypes");
         let val = sel.options[sel.selectedIndex].value;
         let correctData = true;
-        if (this.state.date == "") {
+        if (!this.state.date) {
             document.getElementById("date").style.backgroundColor = 'red';
             correctData = false;
         } else {
@@ -34,28 +36,49 @@ export default class List extends React.Component {
         } else {
             document.getElementById("distance").style.backgroundColor = 'white';
         }
-        if (correctData == true) {
-            this.setState({elements: ([...this.state.elements, new Train(this.state.date, val, this.state.distance)])});
+        if (correctData) {
+            console.log('asdadsasd');
+            const elems = [...this.state.elements, new Train(this.state.date, val, this.state.distance)];
+            this.setState({elements: (elems)});
+            this.setState({elementsFilter: (elems)});
         }
     }
 
     del(i) {
-        this.setState(state => ({
-            elements: this.state.elements.filter((el, index) => index !== i)
-        }))
+        const elems = this.state.elements.filter((el, index) => index !== i);
+        this.setState({elements: [...elems]});
+        this.setState({elementsFilter: [...elems]});
     }
 
-    reset(event) {
-        event.preventDefault();
+    reset() {
         this.setState({distanceFilterMin: 0})
         this.setState({distanceFilterMax: 9999})
         this.setState({typeTrainFilter: "Не выбрано"})
-        let select = document.querySelector('#listTypesFilter');
-        document.querySelector('#btnReset').addEventListener('click', function () {
-            // по значению
-            select.value = "Не выбрано";
-        });
+        this.setState({elementsFilter: [...this.state.elements]});
     }
+
+
+    filter() {
+
+        const items = this.state.elements.filter(el => {
+            if (
+                (parseInt(this.state.distanceFilterMin) <= parseInt(el.distance) && parseInt(this.state.distanceFilterMax) >= parseInt(el.distance))
+                &&
+                (this.state.typeTrainFilter === el.typeTrain || this.state.typeTrainFilter === "Не выбрано")
+                &&
+                ((Date.parse(el.date) >= Date.parse(this.state.dateFilterMin) && Date.parse(el.date) <= Date.parse(this.state.dateFilterMax)) || (this.state.dateFilterMax === "") || (this.state.dateFilterMin === ""))
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        this.setState({elementsFilter: items});
+    }
+
+/*    reset() {
+        this.listItems = [...this.props.elements];
+    }*/
 
     render() {
         return (
@@ -71,15 +94,18 @@ export default class List extends React.Component {
                     </select>
                     <input placeholder="Введите расстояние в км" type="number" name="date3" id="distance" min="0"
                            value={this.state.distance} onChange={(e) => this.setState({distance: e.target.value})}/>
-                    <input type="submit" onClick={(e) => this.add(e)} value="Добавить"/>
+                    <button type="button" onClick={(e) => this.add(e)}>Добавить</button>
                     <ItemList
-                        elements={this.state.elements}
+                        elements={this.state.elementsFilter}
                         onDelete={this.del}
                         distanceFilterMin={parseInt(this.state.distanceFilterMin)}
                         distanceFilterMax={parseInt(this.state.distanceFilterMax)}
                         typeTrainFilter={this.state.typeTrainFilter}
+                        dateFilterMin={this.state.dateFilterMin}
+                        dateFilterMax={this.state.dateFilterMax}
                     />
                 </form>
+                {/*Фильтр*/}
                 <form>
                     <div className="filter">
                         <div className="containerFilter">
@@ -101,7 +127,10 @@ export default class List extends React.Component {
                             </div>
 
                             <div className="filterBlock">
-                                <input type="submit" onClick={(e) => this.reset(e)} value="Сбросить" id="btnReset"/>
+                                <input type="button" onClick={(e) =>
+                                   this.reset()} value="Сбросить"/>
+                                <input type="button" onClick={(e) =>
+                                   this.filter()} value="Применить"/>
                             </div>
 
                         </div>
@@ -118,6 +147,20 @@ export default class List extends React.Component {
                                     </select>
                                 </div>
                             </div>
+
+                            <div className="containerFilter">
+                                <div className="filterBlock">
+                                    <h5>Период</h5>
+                                    от <input type="date" name="dateFilterMin" id="dateFilterMin"
+                                              value={this.state.dateFilterMin}
+                                              onChange={(e) => this.setState({dateFilterMin: e.target.value})}/>
+                                    <> до</>
+                                    <input type="date" name="dateFilterMax" id="dateFilterMax"
+                                           value={this.state.dateFilterMax}
+                                           onChange={(e) => this.setState({dateFilterMax: e.target.value})}/>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </form>
