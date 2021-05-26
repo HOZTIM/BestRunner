@@ -1,6 +1,6 @@
 import React from "react";
 import Train from './train'
-import ItemList from './item-list'
+import ItemList from "./item-list";
 
 export default class List extends React.Component {
     constructor(props) {
@@ -15,14 +15,16 @@ export default class List extends React.Component {
             distanceFilterMax: 9999,
             typeTrainFilter: "Не выбрано",
             dateFilterMin: "",
-            dateFilterMax: ""
+            dateFilterMax: "",
+            listTypesFilter: "",
+            typeTrain: "Бег",
+            statusForm1: false
         }
         this.del = this.del.bind(this);
+        this.editForm = this.editForm.bind(this);
     }
 
     add() {
-        let sel = document.getElementById("listTypes");
-        let val = sel.options[sel.selectedIndex].value;
         let correctData = true;
         if (!this.state.date) {
             document.getElementById("date").style.backgroundColor = 'red';
@@ -37,8 +39,7 @@ export default class List extends React.Component {
             document.getElementById("distance").style.backgroundColor = 'white';
         }
         if (correctData) {
-            console.log('asdadsasd');
-            const elems = [...this.state.elements, new Train(this.state.date, val, this.state.distance)];
+            const elems = [...this.state.elements, new Train(this.state.date, this.state.typeTrain, this.state.distance)];
             this.setState({elements: (elems)});
             this.setState({elementsFilter: (elems)});
         }
@@ -55,6 +56,8 @@ export default class List extends React.Component {
         this.setState({distanceFilterMax: 9999})
         this.setState({typeTrainFilter: "Не выбрано"})
         this.setState({elementsFilter: [...this.state.elements]});
+        this.setState({dateFilterMin: ""});
+        this.setState({dateFilterMax: ""});
     }
 
 
@@ -76,18 +79,24 @@ export default class List extends React.Component {
         this.setState({elementsFilter: items});
     }
 
-/*    reset() {
-        this.listItems = [...this.props.elements];
-    }*/
+    editForm() {
+
+    }
+    /*    reset() {
+            this.listItems = [...this.props.elements];
+        }*/
 
     render() {
         return (
             <div className="container">
-                <form>
+                <form className="trains">
                     <h2 className="titleFilter">Тренировки</h2>
+                    {/*<button onClick={(e) => this.form1)}>*/}
+                    {/*    <img src={AddTrain} alt="asdsad"/>*/}
+                    {/*</button>*/}
                     <input type="date" name="date" id="date" value={this.state.date}
                            onChange={(e) => this.setState({date: e.target.value})}/>
-                    <select id="listTypes">
+                    <select value={this.state.typeTrain} onChange={(e) => this.setState({typeTrain: e.target.value})}>
                         <option value="Бег">Бег</option>
                         <option value="Велосипеп">Велосипеп</option>
                         <option value="Ходьба">Ходьба</option>
@@ -103,10 +112,11 @@ export default class List extends React.Component {
                         typeTrainFilter={this.state.typeTrainFilter}
                         dateFilterMin={this.state.dateFilterMin}
                         dateFilterMax={this.state.dateFilterMax}
+                        editForm={this.editForm}
                     />
                 </form>
                 {/*Фильтр*/}
-                <form>
+                <form className="filter">
                     <div className="filter">
                         <div className="containerFilter">
                             <h2 className="titleFilter">Фильтр</h2>
@@ -128,9 +138,9 @@ export default class List extends React.Component {
 
                             <div className="filterBlock">
                                 <input type="button" onClick={(e) =>
-                                   this.reset()} value="Сбросить"/>
+                                    this.reset()} value="Сбросить"/>
                                 <input type="button" onClick={(e) =>
-                                   this.filter()} value="Применить"/>
+                                    this.filter()} value="Применить"/>
                             </div>
 
                         </div>
@@ -138,7 +148,7 @@ export default class List extends React.Component {
                             <div className="filterBlock">
                                 <h5>Тип тренировки</h5>
                                 <div className="filterContainer">
-                                    <select id="listTypesFilter"
+                                    <select value={this.state.typeTrainFilter}
                                             onChange={(e) => this.setState({typeTrainFilter: e.target.value})}>
                                         <option value="Не выбрано" id="idOptionFilter">Не выбрано</option>
                                         <option value="Бег">Бег</option>
